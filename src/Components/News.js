@@ -8,13 +8,12 @@ export class News extends Component {
       articles: [],
       loading: false,
       page: 1,
-      totalResults:0
+      totalResults: 0,
     };
   }
 
-  async componentDidMount() {
-    let url =
-      'https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=d1a83067ca2a4429a446468500e61923&pageSize=20';
+  async componentDidMount(props) {
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=d1a83067ca2a4429a446468500e61923&pageSize=${this.props.pageSize}`;
     let response = await fetch(url);
     let data = await response.json();
     data = data.articles;
@@ -22,12 +21,14 @@ export class News extends Component {
   }
 
   handelNextclick = async () => {
-    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 20)) {
-     
+    if (
+      this.state.page + 1 >
+      Math.ceil(this.state.totalResults / this.props.pageSize)
+    ) {
     } else {
-      let url = `https://newsapi.org/v2/everything?domains=wsj.com&apiKey=d1a83067ca2a4429a446468500e61923&page=${
+      let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=d1a83067ca2a4429a446468500e61923&page=${
         this.state.page + 1
-      }&pageSize=12 `;
+      }&pageSize=${this.props.pageSize} `;
       let response = await fetch(url);
       let data = await response.json();
       data = data.articles;
@@ -39,12 +40,15 @@ export class News extends Component {
   };
 
   handelPrevclick = async () => {
-    if (this.state.page + 1 > Math.ceil(this.state.totalResults / 20)) {
+    if (
+      this.state.page + 1 >
+      Math.ceil(this.state.totalResults / this.props.pageSize)
+    ) {
       // Do something when there are no more pages
     } else {
       let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=d1a83067ca2a4429a446468500e61923&page=${
         this.state.page - 1
-      }&pageSize=12`;
+      }&pageSize=${this.props.pageSize}`;
       let response = await fetch(url);
       let data = await response.json();
       data = data.articles;
@@ -67,9 +71,9 @@ export class News extends Component {
                   <Newsitem
                     Title={element.title ? element.title.slice(0, 40) : ''}
                     Description={
-                      element.description
-                        ? element.description.slice(0, 80)
-                        : ''
+                      element.description ? 
+                      element.description.slice(0, 80) : ""
+                
                     }
                     imgurl={element.urlToImage ? element.urlToImage : ''}
                     NewsUrl={element.url}
@@ -91,7 +95,8 @@ export class News extends Component {
             type='button'
             className='btn btn-dark'
             disabled={
-              this.state.page + 1 > Math.ceil(this.state.totalResults / 20)
+              this.state.page + 1 >
+              Math.ceil(this.state.totalResults / this.props.pageSize)
             }
             onClick={this.handelNextclick}
           >
