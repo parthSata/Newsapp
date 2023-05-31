@@ -2,7 +2,6 @@ import './App.css';
 
 import React, { Component } from 'react';
 import Navbar from './Components/Navbar';
-// import Newsitem from './Components/Newsitem';
 import News from './Components/News';
 
 export default class App extends Component {
@@ -10,7 +9,7 @@ export default class App extends Component {
     return (
       <>
         <Navbar />
-        <News pageSize={10} />
+        <News pageSize={12} country="in" category={"sports"} />
       </>
     );
   }

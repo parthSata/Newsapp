@@ -1,10 +1,23 @@
 import React, { Component } from 'react';
 import Newsitem from './Newsitem';
 import Spinner from './Spinner';
+import PropTypes from 'prop-types'
+
 
 const apiKey = '40e960073f634044bcc8b7692dc4cf3d';
 
 export class News extends Component {
+  static defaultProps = {
+    country: 'in',
+    pageSize: 12,
+    category: 'technology',
+  };
+  static propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string,
+  };
+
   constructor() {
     super();
     this.state = {
@@ -15,34 +28,47 @@ export class News extends Component {
     };
   }
   async componentDidMount() {
-    let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=${apiKey}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=business&catagory=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-    // data = data.articles;
     console.log('resilts', data.totalResults);
-    this.setState({ articles: data.articles, totalResults: data.totalResults });
+    this.setState({
+      articles: data.articles,
+      totalResults: data.totalResults,
+      loading: false,
+    });
   }
 
   handelNextclick = async () => {
-    const pagination = Math.ceil(this.state.totalResults / this.props.pageSize)
-    console.log('pagination', pagination)
-    console.log('results', this.state.totalResults)
-    console.log('size', this.props.pageSize)
+    // const pagination = Math.ceil(this.state.totalResults / this.props.pageSize)
+    // console.log('pagination', pagination)
+    // console.log('results', this.state.totalResults)
+    // console.log('size', this.props.pageSize)
 
     if (
-      this.state.page +1 > Math.ceil(this.state.totalResults / this.props.pageSize)
+      !(
+        this.state.page + 1 >
+        Math.ceil(this.state.totalResults / this.props.pageSize)
+      )
     ) {
       // Do something when there are no more pages
-    } else {
-      let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=${apiKey}&page=${
-        this.state.page + 1
-      }&pageSize=${this.props.pageSize}`;
+
+      let url = `https://newsapi.org/v2/top-headlines?country=${
+        this.props.country
+      }&category=business&catagory=${
+        this.props.category
+      }&apiKey=${apiKey}&page=${this.state.page + 1}&pageSize=${
+        this.props.pageSize
+      }`;
+      this.setState({ loading: true });
       let response = await fetch(url);
       let data = await response.json();
       data = data.articles;
       this.setState({
         page: this.state.page + 1,
         articles: data,
+        loading: false,
       });
     }
   };
@@ -55,15 +81,21 @@ export class News extends Component {
     ) {
       // Do something when there are no more pages
     } else {
-      let url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=${apiKey}&page=${
-        this.state.page - 1
-      }&pageSize=${this.props.pageSize}`;
+      let url = `https://newsapi.org/v2/top-headlines?country=${
+        this.props.country
+      }&category=business&catagory=${
+        this.props.category
+      }&apiKey=${apiKey}&page=${this.state.page - 1}&pageSize=${
+        this.props.pageSize
+      }`;
+      this.setState({ loading: true });
       let response = await fetch(url);
       let data = await response.json();
       data = data.articles;
       this.setState({
         page: this.state.page - 1,
         articles: data,
+        loading: false,
       });
     }
   };
@@ -85,7 +117,11 @@ export class News extends Component {
                         ? element.description.slice(0, 80)
                         : ''
                     }
-                    imgurl={element.urlToImage ? element.urlToImage : ''}
+                    imgurl={
+                      element.urlToImage
+                        ? element.urlToImage
+                        : 'https://i0.wp.com/electrek.co/wp-content/uploads/sites/3/2023/05/nvidia-in-car-experience.jpeg?resize=1200%2C628&quality=82&strip=all&ssl=1'
+                    }
                     NewsUrl={element.url}
                   />
                 </div>
