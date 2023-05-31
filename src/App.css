@@ -36,6 +36,9 @@
     transform: rotate(360deg);
   }
 }
+img{
+  cursor: pointer;
+}
 h1{
   font-family: 'Times New Roman', Times, serif;
   font-weight: bolder;
