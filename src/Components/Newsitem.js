@@ -3,14 +3,30 @@ import React, { Component } from 'react';
 
 export class Newsitem extends Component {
   render() {
-    let { Title, Description, imgurl,NewsUrl } = this.props;
+    let { Title, Description, imgurl,NewsUrl ,author,date } = this.props;
     return (
-      <div className='conatainer my-6'>
-        <div className='card' style={{ width: '19.1rem' }}>
-          <img src={imgurl} className='card-img-top' alt='...' />
-          <div className='card-body'>
+      <div className='container my-6'>
+        <div
+          className='card '
+          style={{
+            width: '19.1rem',
+            marginBottom: '10px',
+          }}
+        >
+          <img src={imgurl} className='card-img-top' alt='...' style={
+            {
+              maxHeight:"170px"
+            }
+          } />
+          <div className='card-body' >
             <h5 className='card-title'>{Title}</h5>
-            <p className='card-text'>{Description}</p>
+            <p className='card-text m-0'>{Description}</p>
+            <p className='card-text mt-3'>
+              <small className='text-danger'>
+                By {!author ? 'Unknown' : author} On{' '}
+                {new Date(date).toGMTString()}
+              </small>
+            </p>
             <a
               href={NewsUrl}
               target='_blank'

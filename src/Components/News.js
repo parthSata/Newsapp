@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Newsitem from './Newsitem';
 import Spinner from './Spinner';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import './App.css';
 
-
-const apiKey = '40e960073f634044bcc8b7692dc4cf3d';
+const apiKey = '92a3cb76968846e69f7e4b66467df8d8';
 
 export class News extends Component {
   static defaultProps = {
@@ -18,88 +18,66 @@ export class News extends Component {
     category: PropTypes.string,
   };
 
-  constructor() {
-    super();
+   capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+  constructor(props) {
+    super(props);
     this.state = {
       articles: [],
       loading: false,
       page: 1,
       totalResults: 0,
     };
+    document.title = `NewsMonkey- ${this.capitalizeFirstLetter(
+      this.props.category
+    )}`;
   }
   async componentDidMount() {
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-    console.log('resilts', data.totalResults);
+    console.log('resilts', data);
     this.setState({
       articles: data.articles,
       totalResults: data.totalResults,
       loading: false,
     });
   }
+  async updateNews() {
+    let url = `https://newsapi.org/v2/top-headlines?country=${
+      this.props.country
+    }&category=${this.props.category}&apiKey=${apiKey}&page=${
+      this.state.page + 1
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
+    let response = await fetch(url);
+    let data = await response.json();
+    data = data.articles;
+    this.setState({
+      articles: data,
+      loading: false,
+    });
+  }
 
   handelNextclick = async () => {
-    // const pagination = Math.ceil(this.state.totalResults / this.props.pageSize)
-    // console.log('pagination', pagination)
-    // console.log('results', this.state.totalResults)
-    // console.log('size', this.props.pageSize)
-
-    if (
-      !(
-        this.state.page + 1 >
-        Math.ceil(this.state.totalResults / this.props.pageSize)
-      )
-    ) {
-      // Do something when there are no more pages
-
-      let url = `https://newsapi.org/v2/top-headlines?country=${
-        this.props.country
-      }&category=${this.props.category}&apiKey=${apiKey}&page=${
-        this.state.page + 1
-      }&pageSize=${this.props.pageSize}`;
-      this.setState({ loading: true });
-      let response = await fetch(url);
-      let data = await response.json();
-      data = data.articles;
-      this.setState({
-        page: this.state.page + 1,
-        articles: data,
-        loading: false,
-      });
-    }
+    this.setState({ page: this.state.page + 1 });
+    this.updateNews();
   };
 
   handelPrevclick = async () => {
-    console.log('previous');
-    if (
-      this.state.page + 1 >
-      Math.ceil(this.state.totalResults / this.props.pageSize)
-    ) {
-      // Do something when there are no more pages
-    } else {
-      let url = `https://newsapi.org/v2/top-headlines?country=${
-        this.props.country
-      }&category=${this.props.category}&apiKey=${apiKey}&page=${
-        this.state.page - 1
-      }&pageSize=${this.props.pageSize}`;
-      this.setState({ loading: true });
-      let response = await fetch(url);
-      let data = await response.json();
-      data = data.articles;
-      this.setState({
-        page: this.state.page - 1,
-        articles: data,
-        loading: false,
-      });
-    }
+    this.setState({ page: this.state.page - 1 });
+    this.updateNews();
   };
 
   render() {
     return (
       <div className='container'>
-        <h1>News Monkey</h1>
+        <h1 className='text-center my-4 '>News Monkey - Top HeadLines On {this.capitalizeFirstLetter(
+      this.props.category
+    )+ "."} </h1>
         {this.state.loading && <Spinner />}
         <div className='row'>
           {this.state.articles &&
@@ -107,18 +85,20 @@ export class News extends Component {
               return (
                 <div className='col md-3' key={element.url}>
                   <Newsitem
-                    Title={element.title ? element.title.slice(0, 40) : ''}
+                    Title={element.title ? element.title : ''}
                     Description={
                       element.description
-                        ? element.description.slice(0, 80)
-                        : ''
+                        ? element.description.slice(0, 100)
+                        : 'Hello This is Breaking News Of Today ..'
                     }
                     imgurl={
                       element.urlToImage
                         ? element.urlToImage
-                        : 'https://i0.wp.com/electrek.co/wp-content/uploads/sites/3/2023/05/nvidia-in-car-experience.jpeg?resize=1200%2C628&quality=82&strip=all&ssl=1'
+                        : 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='
                     }
                     NewsUrl={element.url}
+                    date={element.publishedAt}
+                    author={element.author}
                   />
                 </div>
               );
