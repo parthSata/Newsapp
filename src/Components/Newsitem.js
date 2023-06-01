@@ -9,7 +9,7 @@ export class Newsitem extends Component {
         <div
           className='card '
           style={{
-            width: '19.1rem',
+            width: '17rem',
             marginBottom: '10px',
           }}
         >

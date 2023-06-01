@@ -3,8 +3,9 @@ import Newsitem from './Newsitem';
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import './App.css';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-const apiKey = '92a3cb76968846e69f7e4b66467df8d8';
+const apiKey = 'dbb35b11a2a440128c6aea629efb8305';
 
 export class News extends Component {
   static defaultProps = {
@@ -18,9 +19,9 @@ export class News extends Component {
     category: PropTypes.string,
   };
 
-   capitalizeFirstLetter(string) {
+  capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-}
+  }
 
   constructor(props) {
     super(props);
@@ -46,65 +47,91 @@ export class News extends Component {
       loading: false,
     });
   }
-  async updateNews() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${
-      this.props.country
-    }&category=${this.props.category}&apiKey=${apiKey}&page=${
-      this.state.page + 1
-    }&pageSize=${this.props.pageSize}`;
+  // async updateNews() {
+  //   let url = `https://newsapi.org/v2/top-headlines?country=${
+  //     this.props.country
+  //   }&category=${this.props.category}&apiKey=${apiKey}&page=${
+  //     this.state.page + 1
+  //   }&pageSize=${this.props.pageSize}`;
+  //   this.setState({ loading: true });
+  //   let response = await fetch(url);
+  //   let data = await response.json();
+  //   data = data.articles;
+  //   this.setState({
+  //     articles: data,
+  //     loading: false,
+  //   });
+  // }
+
+  // handelNextclick = async () => {
+  //   this.setState({ page: this.state.page + 1 });
+  //   this.updateNews();
+  // };
+
+  // handelPrevclick = async () => {
+  //   this.setState({ page: this.state.page - 1 });
+  //   this.updateNews();
+  // };
+
+  fetchMoreData = async() => {
+    setTimeout(async () => {
+      this.setState({ page: this.state.page + 1 });
+      let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-    data = data.articles;
+    console.log('resilts', data);
     this.setState({
-      articles: data,
+      articles: this.state.articles.concat(data.articles),
+      totalResults: data.totalResults,
       loading: false,
     });
-  }
-
-  handelNextclick = async () => {
-    this.setState({ page: this.state.page + 1 });
-    this.updateNews();
-  };
-
-  handelPrevclick = async () => {
-    this.setState({ page: this.state.page - 1 });
-    this.updateNews();
+    }, 1000);
   };
 
   render() {
     return (
-      <div className='container'>
-        <h1 className='text-center my-4 '>News Monkey - Top HeadLines On {this.capitalizeFirstLetter(
-      this.props.category
-    )+ "."} </h1>
-        {this.state.loading && <Spinner />}
-        <div className='row'>
-          {this.state.articles &&
-            this.state.articles.map((element) => {
-              return (
-                <div className='col md-3' key={element.url}>
-                  <Newsitem
-                    Title={element.title ? element.title : ''}
-                    Description={
-                      element.description
-                        ? element.description.slice(0, 100)
-                        : 'Hello This is Breaking News Of Today ..'
-                    }
-                    imgurl={
-                      element.urlToImage
-                        ? element.urlToImage
-                        : 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='
-                    }
-                    NewsUrl={element.url}
-                    date={element.publishedAt}
-                    author={element.author}
-                  />
-                </div>
-              );
-            })}
-        </div>
-        <div className='container d-flex justify-content-between'>
+      <>
+        <h1 className='text-center my-4 '>
+          News Monkey - Top HeadLines On{' '}
+          {this.capitalizeFirstLetter(this.props.category) + '.'}{' '}
+        </h1>
+        {/* {this.state.loading && <Spinner />} */}
+
+        <InfiniteScroll
+          dataLength={this.state.articles.length}
+          next={this.fetchMoreData}
+          hasMore={this.state.articles.length !== this.state.totalResults}
+          loader={<Spinner />}
+        >
+          <div className='container'>
+            <div className='row'>
+              {this.state.articles.map((element,index) => {
+                return (
+                  <div className='col md-3' key={element.url} >
+                    <Newsitem
+                      Title={element.title ? element.title : ''}
+                      Description={
+                        element.description
+                          ? element.description.slice(0, 100)
+                          : 'Hello This is Breaking News Of Today ..'
+                      }
+                      imgurl={
+                        element.urlToImage
+                          ? element.urlToImage
+                          : 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='
+                      }
+                      NewsUrl={element.url}
+                      date={element.publishedAt}
+                      author={element.author}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </InfiniteScroll>
+        {/* <div className='container d-flex justify-content-between'>
           <button
             type='button'
             className='btn btn-dark'
@@ -124,8 +151,8 @@ export class News extends Component {
           >
             Next &rarr;
           </button>
-        </div>
-      </div>
+        </div> */}
+      </>
     );
   }
 }
