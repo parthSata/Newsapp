@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component,useState } from 'react';
 import NavBar from './Components/Navbar';
 import News from './Components/News';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LoadingBar from 'react-top-loading-bar';
 
-class App extends Component {
-  pageSize = 12;
-  country = 'us';
-
-  render() {
+const App =() =>{
+  const pageSize = 12;
+  const country = 'us';
+  // const [pageSize, setpageSize] = useState(12);
+  // const [country, setcountry] = useState("in");
+  // const [category, setcategory] = useState("");
+ 
     return (
       <div>
         <BrowserRouter>
@@ -20,8 +21,8 @@ class App extends Component {
               element={
                 <News
                   key='general'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='general'
                 />
               }
@@ -31,8 +32,8 @@ class App extends Component {
               element={
                 <News
                   key='business'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='business'
                 />
               }
@@ -42,8 +43,8 @@ class App extends Component {
               element={
                 <News
                   key='entertainment'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='entertainment'
                 />
               }
@@ -53,8 +54,8 @@ class App extends Component {
               element={
                 <News
                   key='health'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='health'
                 />
               }
@@ -64,8 +65,8 @@ class App extends Component {
               element={
                 <News
                   key='science'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='science'
                 />
               }
@@ -75,8 +76,8 @@ class App extends Component {
               element={
                 <News
                   key='sports'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='sports'
                 />
               }
@@ -86,8 +87,8 @@ class App extends Component {
               element={
                 <News
                   key='technology'
-                  pageSize={this.pageSize}
-                  country={this.country}
+                  pageSize={pageSize}
+                  country={country}
                   category='technology'
                 />
               }
@@ -96,6 +97,6 @@ class App extends Component {
         </BrowserRouter>
       </div>
     );
-  }
+  
 }
 export default App;
