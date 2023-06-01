@@ -1,17 +1,19 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import NavBar from './Components/Navbar';
 import News from './Components/News';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-
+import LoadingBar from 'react-top-loading-bar';
 
 class App extends Component {
   pageSize = 12;
-  country = "in";
+  country = 'us';
+
   render() {
     return (
       <div>
         <BrowserRouter>
-        <NavBar />
+          <NavBar />
+
           <Routes>
             <Route
               path='/'

@@ -9,15 +9,15 @@ export class Newsitem extends Component {
         <div
           className='card '
           style={{
-            width: '17rem',
             marginBottom: '10px',
           }}
         >
-          <img src={imgurl} className='card-img-top' alt='...' style={
+          <img src={imgurl} className='card-img-top' style={
             {
-              maxHeight:"170px"
+              maxHeight: "170px"
             }
-          } />
+          }
+          />
           <div className='card-body' >
             <h5 className='card-title'>{Title}</h5>
             <p className='card-text m-0'>{Description}</p>
