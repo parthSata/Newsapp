@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import './App.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const apiKey = '92a3cb76968846e69f7e4b66467df8d8';
+const apiKey = '239f28ba30e843718ea36f2ba4c41c3a';
 
 export class News extends Component {
   static defaultProps = {
@@ -40,7 +40,7 @@ export class News extends Component {
     this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-     console.log('resilts', data);
+    console.log('resilts', data);
 
     this.setState({
       articles: data.articles,
@@ -108,7 +108,7 @@ export class News extends Component {
     // console.log(this.state.page);
     return (
       <>
-        <h1 className='text-center my-4 '>
+        <h1 className='text-center'style={{marginTop:"100px"}}>
           News Monkey - Top HeadLines On{' '}
           {this.capitalizeFirstLetter(this.props.category) + '.'}
         </h1>

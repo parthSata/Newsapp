@@ -11,9 +11,9 @@ const Newsitem = (props) => {
             marginBottom: '10px',
           }}
         >
-          <img src={imgurl} className='card-img-top' style={
+          <img src={imgurl} className='card-img-top' alt="" style={
             {
-              maxHeight: "170px"
+              maxHeight: "200px"
             }
           }
           />
