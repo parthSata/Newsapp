@@ -13,7 +13,7 @@ export class News extends Component {
     pageSize: 12,
     category: 'technology',
   };
-  
+
   static propTypes = {
     country: PropTypes.string,
     pageSize: PropTypes.number,
@@ -41,66 +41,73 @@ export class News extends Component {
 
   fetchNews = async () => {
     this.setState({ loading: true });
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
+    const { country, category, pageSize } = this.props;
+    const { page } = this.state;
+    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}&pageSize=${pageSize}&page=${page}`;
+
     try {
-      let response = await fetch(url);
-      if (response.status === 426) {
-        console.error('426 Upgrade Required: The server requires the client to switch protocols.');
-        return;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
-      let data = await response.json();
+      const data = await response.json();
       this.setState({
         articles: data.articles,
         totalResults: data.totalResults,
         loading: false,
       });
     } catch (error) {
-      console.error('Error fetching news:', error);
+      console.error('Failed to fetch news:', error);
       this.setState({ loading: false });
     }
   };
 
   fetchMoreData = async () => {
-    let pageNumber = this.state.page + 1;
-    this.setState({ page: pageNumber });
+    const { country, category, pageSize } = this.props;
+    let { page, articles } = this.state;
+    page += 1;
+    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&apiKey=${apiKey}&pageSize=${pageSize}&page=${page}`;
 
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}&page=${pageNumber}`;
     try {
-      let response = await fetch(url);
-      if (response.status === 426) {
-        console.error('426 Upgrade Required: The server requires the client to switch protocols.');
-        return;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
-      let data = await response.json();
+      const data = await response.json();
       const filteredData = data.articles.filter(
-        (item) => !this.state.articles.some((item2) => item2.url === item.url)
+        (item) => !articles.some((article) => article.url === item.url)
       );
       this.setState({
-        articles: this.state.articles.concat(filteredData),
+        articles: articles.concat(filteredData),
         totalResults: data.totalResults,
+        loading: false,
+        page,
       });
     } catch (error) {
-      console.error('Error fetching more news:', error);
+      console.error('Failed to fetch more news:', error);
     }
   };
 
   render() {
+    const { articles, loading, totalResults } = this.state;
+    const { category } = this.props;
+
     return (
       <>
-        <h1 className='text-center' style={{ marginTop: "100px" }}>
-          News Monkey - Top Headlines On {this.capitalizeFirstLetter(this.props.category)}
+        <h1 className="text-center" style={{ marginTop: '100px' }}>
+          News Monkey - Top Headlines On {this.capitalizeFirstLetter(category)}
         </h1>
-        {this.state.loading && <Spinner />}
+        {loading && <Spinner />}
         <InfiniteScroll
-          dataLength={this.state.articles.length}
+          dataLength={articles.length}
           next={this.fetchMoreData}
-          hasMore={this.state.articles.length < this.state.totalResults}
+          hasMore={articles.length < totalResults}
           loader={<Spinner />}
         >
-          <div className='container'>
-            <div className='row'>
-              {this.state.articles.map((element) => (
-                <div className='col-md-4' key={element.url}>
+          <div className="container">
+            <div className="row">
+              {articles.map((element) => (
+                <div className="col-md-4" key={element.url}>
                   <NewsItem
                     title={element.title || ''}
                     description={element.description ? element.description.slice(0, 100) : 'No description available.'}
