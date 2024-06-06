@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Newsitem from './Newsitem';
+import NewsItem from './Newsitem';
 import Spinner from './Spinner';
 import PropTypes from 'prop-types';
 import './App.css';
@@ -20,9 +20,9 @@ export class News extends Component {
     category: PropTypes.string,
   };
 
-  capitalizeFirstLetter(string) {
+  capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -32,7 +32,7 @@ export class News extends Component {
       page: 1,
       totalResults: 0,
     };
-    document.title = `NewsMonkey- ${this.capitalizeFirstLetter(this.props.category)}`;
+    document.title = `NewsMonkey - ${this.capitalizeFirstLetter(this.props.category)}`;
   }
 
   async componentDidMount() {
@@ -44,22 +44,21 @@ export class News extends Component {
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}&page=${this.state.page}`;
     try {
       let response = await fetch(url);
-      if (response.ok) {
-        let data = await response.json();
-        this.setState({
-          articles: data.articles || [],
-          totalResults: data.totalResults || 0,
-          loading: false,
-        });
-      } else {
-        console.error('Failed to fetch news:', response.statusText);
-        this.setState({ loading: false });
+      if (response.status === 426) {
+        console.error('426 Upgrade Required: The server requires the client to switch protocols.');
+        return;
       }
+      let data = await response.json();
+      this.setState({
+        articles: data.articles,
+        totalResults: data.totalResults,
+        loading: false,
+      });
     } catch (error) {
       console.error('Error fetching news:', error);
       this.setState({ loading: false });
     }
-  }
+  };
 
   fetchMoreData = async () => {
     let pageNumber = this.state.page + 1;
@@ -68,16 +67,18 @@ export class News extends Component {
     let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}&page=${pageNumber}`;
     try {
       let response = await fetch(url);
-      if (response.ok) {
-        let data = await response.json();
-        const newArticles = data.articles || [];
-        this.setState({
-          articles: [...this.state.articles, ...newArticles],
-          totalResults: data.totalResults || 0,
-        });
-      } else {
-        console.error('Failed to fetch more news:', response.statusText);
+      if (response.status === 426) {
+        console.error('426 Upgrade Required: The server requires the client to switch protocols.');
+        return;
       }
+      let data = await response.json();
+      const filteredData = data.articles.filter(
+        (item) => !this.state.articles.some((item2) => item2.url === item.url)
+      );
+      this.setState({
+        articles: this.state.articles.concat(filteredData),
+        totalResults: data.totalResults,
+      });
     } catch (error) {
       console.error('Error fetching more news:', error);
     }
@@ -90,7 +91,6 @@ export class News extends Component {
           News Monkey - Top Headlines On {this.capitalizeFirstLetter(this.props.category)}
         </h1>
         {this.state.loading && <Spinner />}
-
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
@@ -99,20 +99,18 @@ export class News extends Component {
         >
           <div className='container'>
             <div className='row'>
-              {this.state.articles.map((element) => {
-                return (
-                  <div className='col-md-4' key={element.url}>
-                    <Newsitem
-                      Title={element.title || ''}
-                      Description={element.description ? element.description.slice(0, 100) : 'No description available.'}
-                      imgurl={element.urlToImage || 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='}
-                      NewsUrl={element.url}
-                      date={element.publishedAt}
-                      author={element.author}
-                    />
-                  </div>
-                );
-              })}
+              {this.state.articles.map((element) => (
+                <div className='col-md-4' key={element.url}>
+                  <NewsItem
+                    title={element.title || ''}
+                    description={element.description ? element.description.slice(0, 100) : 'No description available.'}
+                    imgUrl={element.urlToImage || 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='}
+                    newsUrl={element.url}
+                    date={element.publishedAt}
+                    author={element.author}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </InfiniteScroll>
