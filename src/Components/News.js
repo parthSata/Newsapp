@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import './App.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-const apiKey = '239f28ba30e843718ea36f2ba4c41c3a';
+const apiKey = '53ce2a819b2d47f8aa3d9d0984abda62';
 
 export class News extends Component {
   static defaultProps = {
