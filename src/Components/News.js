@@ -114,14 +114,14 @@ export class News extends Component {
         {this.state.loading && <Spinner />}
 
         <InfiniteScroll
-          dataLength={this.state.articles?.length}
+          dataLength={this.state.articles.length}
           next={this.fetchMoreData}
-          hasMore={this.state.articles?.length !== this.state.totalResults}
+          hasMore={this.state.articles.length !== this.state.totalResults}
           loader={<Spinner />}
         >
           <div className='container'>
             <div className='row'>
-              {this.state.articles?.map((element, index) => {
+              {this.state.articles.map((element, index) => {
                 return (
                   <div className='col-md-4' key={element.url}>
                     <Newsitem
