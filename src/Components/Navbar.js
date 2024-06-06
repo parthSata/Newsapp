@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
          bg-dark'
         >
           <div className='container-fluid'>
-            <Link className='navbar-brand' to='/'>
+            <Link className='navbar-brand' to='/general'>
               News Monkey
             </Link>
             <button
@@ -48,7 +48,7 @@ import { Link } from 'react-router-dom';
                   </Link>
                 </li>
                 <li className='nav-item'>
-                  <Link className='nav-link' to='/'>
+                  <Link className='nav-link' to='/general'>
                     General
                   </Link>
                 </li>

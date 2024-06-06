@@ -16,7 +16,7 @@ const App =() =>{
         <LoadingBar height={3} color='#f11946' progress={progress} />
         <Routes>
           <Route
-            path='/'
+            path='/general'
             element={
               <News setProgress={setProgress}
                 key='general'

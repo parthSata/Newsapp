@@ -40,7 +40,6 @@ export class News extends Component {
     this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-    console.log('resilts', data);
 
     this.setState({
       articles: data.articles,
