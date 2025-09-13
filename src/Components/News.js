@@ -1,22 +1,21 @@
-import React, { Component } from 'react';
-import Newsitem from './Newsitem';
-import Spinner from './Spinner';
-import PropTypes from 'prop-types';
-import './App.css';
-import InfiniteScroll from 'react-infinite-scroll-component';
-
-const apiKey = '53ce2a819b2d47f8aa3d9d0984abda62';
+import React, { Component } from "react";
+import Newsitem from "./Newsitem";
+import Spinner from "./Spinner";
+import PropTypes from "prop-types";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export class News extends Component {
   static defaultProps = {
-    country: 'in',
+    country: "us",
     pageSize: 12,
-    category: 'technology',
+    category: "general",
   };
   static propTypes = {
     country: PropTypes.string,
     pageSize: PropTypes.number,
     category: PropTypes.string,
+    apiKey: PropTypes.string,
+    setProgress: PropTypes.func.isRequired,
   };
 
   capitalizeFirstLetter(string) {
@@ -27,119 +26,84 @@ export class News extends Component {
     super(props);
     this.state = {
       articles: [],
-      loading: false,
+      loading: true,
       page: 1,
       totalResults: 0,
     };
-    document.title = `NewsMonkey- ${this.capitalizeFirstLetter(
+    document.title = `${this.capitalizeFirstLetter(
       this.props.category
-    )}`;
+    )} - NewsMonkey`;
   }
+
   async componentDidMount() {
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}`;
+    this.updateNews();
+  }
+
+  async updateNews() {
+    this.props.setProgress(10);
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let response = await fetch(url);
+    this.props.setProgress(30);
     let data = await response.json();
-    console.log('resilts', data);
+    this.props.setProgress(70);
 
     this.setState({
-      articles: data.articles,
-      totalResults: data.totalResults,
+      articles: data.articles || [],
+      totalResults: data.totalResults || 0,
       loading: false,
     });
+    this.props.setProgress(100);
   }
 
-  // async updateNews() {
-  //   this.props.setProgress(10);
-  //   let url = `https://newsapi.org/v2/top-headlines?country=${
-  //     this.props.country
-  //   }&category=${this.props.category}&apiKey=${apiKey}&page=${
-  //     this.state.page + 1
-  //   }&pageSize=${this.props.pageSize}`;
-  //   this.setState({ loading: true });
-  //   this.props.setProgress(30);
-  //   let response = await fetch(url);
-  //   let data = await response.json();
-  //   this.props.setProgress(70);
-  //   data = data.articles;
-  //   this.setState({
-  //     articles: data,
-  //     loading: false,
-  //   });
-  //   this.props.setProgress(100);
-  // }
-
-  // handelNextclick = async () => {
-  //   this.setState({ page: this.state.page + 1 });
-  //   this.updateNews();
-  // };
-
-  // handelPrevclick = async () => {
-  //   this.setState({ page: this.state.page - 1 });
-  //   this.updateNews();
-  // };
-
   fetchMoreData = async () => {
-    let pageNumber = this.state.page;
-    pageNumber = pageNumber + 1;
-
+    const pageNumber = this.state.page + 1;
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${pageNumber}&pageSize=${this.props.pageSize}`;
     this.setState({ page: pageNumber });
-
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&pageSize=${this.props.pageSize}&page=${pageNumber}`;
-
-    // this.setState({ loading: true });
     let response = await fetch(url);
     let data = await response.json();
-    console.log('resilts pagination', data);
-    const filterdData =
-      data?.articles.length > 0 &&
-      this.state.articles.length > 0 &&
-      data.articles.filter(
-        (item) => !this.state.articles.some((item2) => item2.url === item.url)
-      );
+
     this.setState({
-      articles: this.state.articles.concat(filterdData),
-      totalResults: data.totalResults,
-      loading: false,
+      articles: this.state.articles.concat(data.articles || []),
+      totalResults: data.totalResults || 0,
     });
   };
 
   render() {
-    // console.log(this.state.page);
     return (
       <>
-        <h1 className='text-center'style={{marginTop:"100px"}}>
-          News Monkey - Top HeadLines On{' '}
-          {this.capitalizeFirstLetter(this.props.category) + '.'}
+        <h1
+          className="text-center"
+          style={{ margin: "35px 0px", marginTop: "90px" }}
+        >
+          NewsMonkey - Top {this.capitalizeFirstLetter(this.props.category)}{" "}
+          Headlines
         </h1>
         {this.state.loading && <Spinner />}
 
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
-          hasMore={this.state.articles.length !== this.state.totalResults}
+          hasMore={this.state.articles.length < this.state.totalResults}
           loader={<Spinner />}
         >
-          <div className='container'>
-            <div className='row'>
-              {this.state.articles.map((element, index) => {
+          <div className="container">
+            <div className="row">
+              {this.state.articles.map((element) => {
                 return (
-                  <div className='col-md-4' key={element.url}>
+                  <div className="col-md-4" key={element.url}>
                     <Newsitem
-                      Title={element.title ? element.title : ''}
+                      Title={element.title ? element.title.slice(0, 45) : ""}
                       Description={
                         element.description
-                          ? element.description.slice(0, 100)
-                          : 'Hello This is Breaking News Of Today ..'
+                          ? element.description.slice(0, 88)
+                          : ""
                       }
-                      imgurl={
-                        element.urlToImage
-                          ? element.urlToImage
-                          : 'https://media.istockphoto.com/id/1311148884/vector/abstract-globe-background.jpg?s=612x612&w=0&k=20&c=9rVQfrUGNtR5Q0ygmuQ9jviVUfrnYHUHcfiwaH5-WFE='
-                      }
+                      imgurl={element.urlToImage}
                       NewsUrl={element.url}
-                      date={element.publishedAt}
                       author={element.author}
+                      date={element.publishedAt}
+                      source={element.source.name}
                     />
                   </div>
                 );
