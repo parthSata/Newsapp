@@ -10,11 +10,11 @@ export class News extends Component {
     pageSize: 12,
     category: "general",
   };
+
   static propTypes = {
     country: PropTypes.string,
     pageSize: PropTypes.number,
     category: PropTypes.string,
-    apiKey: PropTypes.string,
     setProgress: PropTypes.func.isRequired,
   };
 
@@ -41,7 +41,10 @@ export class News extends Component {
 
   async updateNews() {
     this.props.setProgress(10);
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    const apiKey = process.env.REACT_APP_API_KEY;
+    console.log("🚀 ~ News ~ updateNews ~ apiKey:", apiKey);
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
     this.setState({ loading: true });
     let response = await fetch(url);
     this.props.setProgress(30);
@@ -58,7 +61,9 @@ export class News extends Component {
 
   fetchMoreData = async () => {
     const pageNumber = this.state.page + 1;
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${pageNumber}&pageSize=${this.props.pageSize}`;
+    const apiKey = process.env.REACT_APP_API_KEY;
+    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&page=${pageNumber}&pageSize=${this.props.pageSize}`;
+
     this.setState({ page: pageNumber });
     let response = await fetch(url);
     let data = await response.json();
@@ -80,7 +85,6 @@ export class News extends Component {
           Headlines
         </h1>
         {this.state.loading && <Spinner />}
-
         <InfiniteScroll
           dataLength={this.state.articles.length}
           next={this.fetchMoreData}
@@ -103,7 +107,7 @@ export class News extends Component {
                       NewsUrl={element.url}
                       author={element.author}
                       date={element.publishedAt}
-                      source={element.source.name}
+                      source={element.source ? element.source.name : "Unknown"}
                     />
                   </div>
                 );
