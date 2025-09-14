@@ -8,7 +8,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 export class News extends Component {
   static defaultProps = {
-    country: "us",
+    country: "IN",
     pageSize: 12,
     category: "general",
   };
@@ -46,11 +46,9 @@ export class News extends Component {
     this.props.setProgress(10);
     // CHANGED: URL now points to your own API endpoint
     const url = `/api/news?category=${this.props.category}&page=${this.state.page}`;
-    console.log("🚀 ~ News ~ updateNews ~ url:", url);
 
     this.setState({ loading: true });
     let response = await fetch(url);
-    console.log("🚀 ~ News ~ updateNews ~ response:", response);
     this.props.setProgress(30);
     let data = await response.json();
     this.props.setProgress(70);

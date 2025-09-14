@@ -5,7 +5,6 @@ export default async function handler(req, res) {
   const { category, page } = req.query;
   // Get the API key securely from environment variables
   const apiKey = process.env.NEWS_API_KEY;
-  console.log("🚀 ~ handler ~ apiKey:", apiKey);
 
   // Handle case where API key is missing on the server
   if (!apiKey) {
