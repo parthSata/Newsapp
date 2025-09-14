@@ -42,8 +42,8 @@ export class News extends Component {
   async updateNews() {
     this.props.setProgress(10);
     const apiKey = process.env.REACT_APP_API_KEY;
-    console.log("🚀 ~ News ~ updateNews ~ apiKey:", apiKey);
     const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    console.log("🚀 ~ News ~ updateNews ~ url:", url);
 
     this.setState({ loading: true });
     let response = await fetch(url);
