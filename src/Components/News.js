@@ -1,3 +1,5 @@
+// File: /src/Components/News.js
+
 import React, { Component } from "react";
 import Newsitem from "./Newsitem";
 import Spinner from "./Spinner";
@@ -41,8 +43,8 @@ export class News extends Component {
 
   async updateNews() {
     this.props.setProgress(10);
-    const apiKey = process.env.REACT_APP_API_KEY;
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+    // MODIFIED: URL now points to your own backend API route
+    const url = `/api/news?category=${this.props.category}&page=${this.state.page}`;
     console.log("🚀 ~ News ~ updateNews ~ url:", url);
 
     this.setState({ loading: true });
@@ -50,6 +52,14 @@ export class News extends Component {
     this.props.setProgress(30);
     let data = await response.json();
     this.props.setProgress(70);
+
+    // Check if the API returned an error
+    if (data.status === "error") {
+      console.error("Error from API:", data.message);
+      this.setState({ loading: false });
+      // You might want to set an error state here to show a message to the user
+      return;
+    }
 
     this.setState({
       articles: data.articles || [],
@@ -61,12 +71,18 @@ export class News extends Component {
 
   fetchMoreData = async () => {
     const pageNumber = this.state.page + 1;
-    const apiKey = process.env.REACT_APP_API_KEY;
-    const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${apiKey}&page=${pageNumber}&pageSize=${this.props.pageSize}`;
+    // MODIFIED: URL now points to your own backend API route for the next page
+    const url = `/api/news?category=${this.props.category}&page=${pageNumber}`;
 
     this.setState({ page: pageNumber });
     let response = await fetch(url);
     let data = await response.json();
+
+    // Check if the API returned an error
+    if (data.status === "error") {
+      console.error("Error fetching more data:", data.message);
+      return;
+    }
 
     this.setState({
       articles: this.state.articles.concat(data.articles || []),
